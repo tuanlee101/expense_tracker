@@ -57,24 +57,21 @@ class TransactionProvider extends ChangeNotifier {
 
   double get totalExpenseToday {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
     return _transactions
         .where((t) =>
             t.type == TransactionType.expense &&
-            t.date.isAfter(today.subtract(const Duration(days: 1))))
+            t.date.year == now.year &&
+            t.date.month == now.month &&
+            t.date.day == now.day)
         .fold(0.0, (sum, t) => sum + t.amount);
   }
 
   double get safeSpendingDaily {
-    // Safe spending = (income - fixed costs) / 30 days
+    // Fallback: 50% monthly income / 30 days when user budget is unavailable
     final monthlyIncome = totalIncomeThisMonth;
     if (monthlyIncome <= 0) return 450000;
     final safeAmount = (monthlyIncome * 0.5) / 30;
     return safeAmount > 0 ? safeAmount : 450000;
-  }
-
-  double get totalAssets {
-    return totalIncomeThisMonth - totalExpenseThisMonth + 142500000;
   }
 
   Map<String, double> get categoryBreakdown {

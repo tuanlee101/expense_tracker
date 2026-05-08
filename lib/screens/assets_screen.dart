@@ -372,7 +372,7 @@ class AssetsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 DropdownButtonFormField<AssetType>(
-                  initialValue: selectedType,
+                  value: selectedType,
                   decoration: const InputDecoration(
                     labelText: 'Loại tài sản',
                     border: OutlineInputBorder(),
@@ -457,7 +457,7 @@ class AssetsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 DropdownButtonFormField<AssetType>(
-                  initialValue: selectedType,
+                  value: selectedType,
                   decoration: const InputDecoration(
                     labelText: 'Loại tài sản',
                     border: OutlineInputBorder(),

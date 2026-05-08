@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "outline-variant": "#bfc7d4",
+                      "on-primary-fixed-variant": "#00497d",
+                      "on-secondary-fixed": "#002204",
+                      "outline": "#707883",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "surface-container-high": "#e7e8e9",
+                      "primary-fixed": "#d1e4ff",
+                      "on-secondary-fixed-variant": "#005313",
+                      "on-primary-fixed": "#001d36",
+                      "tertiary": "#8b5000",
+                      "surface-tint": "#0061a4",
+                      "surface-container": "#edeeef",
+                      "surface-variant": "#e1e3e4",
+                      "surface": "#f8f9fa",
+                      "on-primary-container": "#002c4f",
+                      "on-tertiary-container": "#422300",
+                      "on-tertiary-fixed-variant": "#693c00",
+                      "secondary-fixed-dim": "#78dc77",
+                      "tertiary-fixed-dim": "#ffb870",
+                      "surface-container-highest": "#e1e3e4",
+                      "surface-container-low": "#f3f4f5",
+                      "surface-bright": "#f8f9fa",
+                      "on-secondary-container": "#00731e",
+                      "tertiary-fixed": "#ffdcbe",
+                      "on-tertiary-fixed": "#2c1600",
+                      "inverse-on-surface": "#f0f1f2",
+                      "secondary": "#006e1c",
+                      "tertiary-container": "#d37d00",
+                      "primary-fixed-dim": "#9ecaff",
+                      "secondary-fixed": "#94f990",
+                      "on-surface": "#191c1d",
+                      "primary": "#0061a4",
+                      "error": "#ba1a1a",
+                      "surface-dim": "#d9dadb",
+                      "error-container": "#ffdad6",
+                      "inverse-primary": "#9ecaff",
+                      "background": "#f8f9fa",
+                      "on-background": "#191c1d",
+                      "primary-container": "#2196f3",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#91f78e",
+                      "on-surface-variant": "#404752",
+                      "inverse-surface": "#2e3132",
+                      "on-error-container": "#93000a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "xl": "32px",
+                      "xs": "4px",
+                      "margin-tablet": "24px",
+                      "md": "16px",
+                      "margin-mobile": "16px",
+                      "gutter": "16px",
+                      "sm": "8px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Hanken Grotesk"],
+                      "body-md": ["Inter"],
+                      "title-lg": ["Hanken Grotesk"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                      "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                      "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                      "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-xl">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface-container-low transition-colors duration-200">
+<div class="flex items-center gap-md">
+<button class="p-sm hover:bg-surface-variant rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface">close</span>
+</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary">Thêm giao dịch</h1>
+</div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+</header>
+<main class="mt-20 px-margin-mobile max-w-2xl mx-auto">
+<!-- Income/Expense Toggle -->
+<div class="flex bg-surface-container-high rounded-full p-xs mb-lg">
+<button class="flex-1 py-md rounded-full text-center font-title-lg text-body-lg bg-surface-container-lowest shadow-sm text-on-surface-variant transition-all duration-200">
+                Chi tiêu
+            </button>
+<button class="flex-1 py-md rounded-full text-center font-title-lg text-body-lg text-on-surface-variant hover:bg-surface-variant transition-all duration-200">
+                Thu nhập
+            </button>
+</div>
+<!-- Amount Input Section -->
+<div class="mb-xl text-center">
+<label class="block text-label-sm font-label-sm text-outline mb-xs">Số tiền giao dịch</label>
+<div class="flex items-center justify-center gap-sm">
+<input class="bg-transparent border-none text-display-lg font-display-lg text-primary w-full text-center focus:ring-0" placeholder="0" type="text" value="0"/>
+<span class="text-headline-md font-headline-md text-primary">₫</span>
+</div>
+<div class="h-0.5 w-full bg-primary-container opacity-20 mt-xs rounded-full"></div>
+</div>
+<!-- Category Grid Section -->
+<section class="mb-xl">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-title-lg text-title-lg text-on-surface">Hạng mục</h3>
+<button class="text-primary font-label-sm text-label-sm hover:underline">Xem tất cả</button>
+</div>
+<div class="grid grid-cols-4 gap-gutter">
+<!-- Category Item -->
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">restaurant</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Ăn uống</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">shopping_cart</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Mua sắm</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">directions_car</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Di chuyển</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">home</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Nhà cửa</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">receipt</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Hóa đơn</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">favorite</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Sức khỏe</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">school</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Giáo dục</span>
+</button>
+<button class="flex flex-col items-center gap-xs p-xs hover:bg-secondary-container rounded-xl transition-colors group">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container">
+<span class="material-symbols-outlined text-headline-md">more_horiz</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Khác</span>
+</button>
+</div>
+</section>
+<!-- Form Fields -->
+<div class="space-y-lg">
+<!-- Date Picker Placeholder -->
+<div class="flex items-center gap-md p-md bg-surface-container rounded-xl border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
+<div class="flex-1">
+<p class="text-label-sm font-label-sm text-outline">Ngày giao dịch</p>
+<p class="text-body-lg font-body-lg text-on-surface">Hôm nay, 24 Tháng 5, 2024</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+<!-- Note Text Field -->
+<div class="flex items-start gap-md p-md bg-surface-container rounded-xl border border-transparent focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mt-xs">notes</span>
+<div class="flex-1">
+<p class="text-label-sm font-label-sm text-outline">Ghi chú</p>
+<textarea class="w-full bg-transparent border-none p-0 text-body-lg font-body-lg text-on-surface placeholder:text-outline-variant focus:ring-0" placeholder="Nhập ghi chú cho giao dịch này..." rows="2"></textarea>
+</div>
+</div>
+<!-- Wallet Selector -->
+<div class="flex items-center gap-md p-md bg-surface-container rounded-xl border border-transparent hover:border-outline-variant cursor-pointer transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">account_balance_wallet</span>
+<div class="flex-1">
+<p class="text-label-sm font-label-sm text-outline">Từ ví</p>
+<p class="text-body-lg font-body-lg text-on-surface">Ví Tiền mặt</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+<!-- Image Reference (Hidden or Subtle Decorative) -->
+<div class="mt-xl rounded-xl overflow-hidden shadow-sm">
+<img alt="Professional Finance Environment" class="w-full h-32 object-cover opacity-80" data-alt="A clean and modern financial workspace with a high-end smartphone displaying a sleek transaction interface. The background features soft, diffuse natural lighting across a minimalist wooden desk with a small green plant and professional stationery. The overall aesthetic is calm, organized, and corporate, using a primary palette of deep blues and soft greys to evoke financial security and mindfulness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDt0Pv6xcOUlYrJVN_qT_-SoiLJzXrdZNDGumzG3r7_drHo7B-8eymh10_5EvbTjuHIhXU682B4CB024aBHHFvtYgYa_F01WUUz0wKctOWFFwkLLf3DgVrdzfvcOKpf00FKoQK8G7c3NM2-dO54ulAd2qvn4rhdOAV6w6ex5ndY7UPYMkXZ-09Dj9v0oY4pvsDPn-31W9SyG5HW8dlGr4f3BOZLKudjh-3on4e4vZ7cXSU1REITEl2Fy9QWhqm3KzPUwKqZN3vKYY"/>
+</div>
+<!-- Submit Button -->
+<div class="mt-xl">
+<button class="w-full py-lg bg-primary text-on-primary rounded-full font-title-lg text-body-lg shadow-lg hover:bg-surface-tint active:scale-95 transition-all duration-150 flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                Lưu giao dịch
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation (Filtered: Not visible for task-focused transaction screen per "The Filter" rule, but implemented as requested by structure for "Shell" consistency if this were a main screen) -->
+<!-- Suppressed for this view to prioritize the transaction form focus -->
+</body></html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "outline-variant": "#bfc7d4",
+                    "on-primary-fixed-variant": "#00497d",
+                    "on-secondary-fixed": "#002204",
+                    "outline": "#707883",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e7e8e9",
+                    "primary-fixed": "#d1e4ff",
+                    "on-secondary-fixed-variant": "#005313",
+                    "on-primary-fixed": "#001d36",
+                    "tertiary": "#8b5000",
+                    "surface-tint": "#0061a4",
+                    "surface-container": "#edeeef",
+                    "surface-variant": "#e1e3e4",
+                    "surface": "#f8f9fa",
+                    "on-primary-container": "#002c4f",
+                    "on-tertiary-container": "#422300",
+                    "on-tertiary-fixed-variant": "#693c00",
+                    "secondary-fixed-dim": "#78dc77",
+                    "tertiary-fixed-dim": "#ffb870",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-low": "#f3f4f5",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary-container": "#00731e",
+                    "tertiary-fixed": "#ffdcbe",
+                    "on-tertiary-fixed": "#2c1600",
+                    "inverse-on-surface": "#f0f1f2",
+                    "secondary": "#006e1c",
+                    "tertiary-container": "#d37d00",
+                    "primary-fixed-dim": "#9ecaff",
+                    "secondary-fixed": "#94f990",
+                    "on-surface": "#191c1d",
+                    "primary": "#0061a4",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#9ecaff",
+                    "background": "#f8f9fa",
+                    "on-background": "#191c1d",
+                    "primary-container": "#2196f3",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#91f78e",
+                    "on-surface-variant": "#404752",
+                    "inverse-surface": "#2e3132",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "margin-tablet": "24px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "gutter": "16px",
+                    "sm": "8px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "title-lg": ["Hanken Grotesk"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                    "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface-container-low dark:bg-surface-container-low">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed">Quản lý Tài chính</h1>
+</div>
+<button class="p-xs rounded-full hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+</button>
+</header>
+<main class="pt-20 pb-24 px-margin-mobile max-w-2xl mx-auto">
+<!-- Filter and Search Area -->
+<div class="mb-lg space-y-md">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+</div>
+<input class="block w-full pl-10 pr-md py-3 bg-surface-container-highest border-none rounded-xl focus:ring-2 focus:ring-primary text-body-md placeholder-on-surface-variant transition-all" placeholder="Tìm kiếm giao dịch..." type="text"/>
+</div>
+<div class="flex gap-sm overflow-x-auto pb-xs no-scrollbar">
+<button class="flex items-center gap-xs px-md py-2 bg-secondary-container text-on-secondary-container rounded-full text-label-sm font-semibold transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
+                    Tháng này
+                </button>
+<button class="flex items-center gap-xs px-md py-2 bg-surface-container-high text-on-surface-variant rounded-full text-label-sm font-semibold transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+                    Lọc
+                </button>
+<button class="flex items-center gap-xs px-md py-2 bg-surface-container-high text-on-surface-variant rounded-full text-label-sm font-semibold transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="category">category</span>
+                    Hạng mục
+                </button>
+</div>
+</div>
+<!-- Transaction Group: Hôm nay -->
+<section class="mb-lg">
+<div class="flex justify-between items-center mb-sm px-xs">
+<h2 class="text-label-sm font-bold text-outline uppercase tracking-wider">Hôm nay</h2>
+<span class="text-label-sm font-bold text-error">- 450.000đ</span>
+</div>
+<div class="space-y-sm">
+<!-- Transaction Item 1 -->
+<div class="flex items-center justify-between p-md bg-white rounded-xl shadow-sm border border-surface-variant/30 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<p class="font-body-lg font-semibold text-on-surface">Ăn uống</p>
+<p class="text-body-md text-on-surface-variant italic">Bữa trưa văn phòng</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-lg font-bold text-error">- 85.000đ</p>
+<p class="text-label-sm text-outline">12:30</p>
+</div>
+</div>
+<!-- Transaction Item 2 -->
+<div class="flex items-center justify-between p-md bg-white rounded-xl shadow-sm border border-surface-variant/30 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="shopping_bag">shopping_bag</span>
+</div>
+<div>
+<p class="font-body-lg font-semibold text-on-surface">Mua sắm</p>
+<p class="text-body-md text-on-surface-variant">Siêu thị WinMart</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-lg font-bold text-error">- 365.000đ</p>
+<p class="text-label-sm text-outline">08:15</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Transaction Group: Hôm qua -->
+<section class="mb-lg">
+<div class="flex justify-between items-center mb-sm px-xs">
+<h2 class="text-label-sm font-bold text-outline uppercase tracking-wider">Hôm qua</h2>
+<span class="text-label-sm font-bold text-secondary-container bg-secondary/10 px-sm py-0.5 rounded text-secondary">+ 15.000.000đ</span>
+</div>
+<div class="space-y-sm">
+<!-- Transaction Item 3 -->
+<div class="flex items-center justify-between p-md bg-white rounded-xl shadow-sm border border-surface-variant/30 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="payments">payments</span>
+</div>
+<div>
+<p class="font-body-lg font-semibold text-on-surface">Lương tháng 10</p>
+<p class="text-body-md text-on-surface-variant">Công ty TechSoft</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-lg font-bold text-secondary">+ 15.000.000đ</p>
+<p class="text-label-sm text-outline">17:00</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Empty State (Conditional Display Example) -->
+<!-- 
+        <div class="flex flex-col items-center justify-center py-20 px-xl text-center">
+            <div class="w-48 h-48 mb-lg bg-surface-container rounded-full flex items-center justify-center overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=400" alt="Empty list" class="w-full h-full object-cover grayscale opacity-50" data-alt="A clean, minimalist 3D rendering of an empty wallet sitting on a light gray surface. The scene is illuminated by soft, diffused morning light coming from a nearby window, creating a peaceful and quiet atmosphere. The color palette is dominated by neutral tones and soft whites, emphasizing clarity and focus. The overall mood is calm and reflective of a fresh start in financial planning.">
+            </div>
+            <h3 class="text-headline-md font-headline-md text-on-surface mb-xs">Chưa có giao dịch nào</h3>
+            <p class="text-body-lg text-on-surface-variant max-w-xs">Hãy bắt đầu ghi chép các khoản chi tiêu đầu tiên của bạn ngay hôm nay!</p>
+            <button class="mt-lg px-xl py-3 bg-primary text-on-primary rounded-full font-bold shadow-md active:scale-95 transition-transform">
+                Thêm giao dịch
+            </button>
+        </div>
+        -->
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs pb-sm pt-xs bg-surface-container dark:bg-surface-container shadow-md rounded-t-xl md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-transform duration-150 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Tổng quan</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container dark:bg-on-secondary-fixed-variant dark:text-secondary-fixed rounded-full px-5 py-1 transition-transform duration-150 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm">Giao dịch</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-transform duration-150 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-label-sm text-label-sm">Tài sản</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-transform duration-150 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Cá nhân</span>
+</a>
+</nav>
+<!-- FAB (Contextual for Transaction Page) -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary-container text-on-primary-container rounded-2xl shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-[32px]" data-icon="add">add</span>
+</button>
+</body></html>

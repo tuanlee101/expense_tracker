@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "outline-variant": "#bfc7d4",
+                    "on-primary-fixed-variant": "#00497d",
+                    "on-secondary-fixed": "#002204",
+                    "outline": "#707883",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e7e8e9",
+                    "primary-fixed": "#d1e4ff",
+                    "on-secondary-fixed-variant": "#005313",
+                    "on-primary-fixed": "#001d36",
+                    "tertiary": "#8b5000",
+                    "surface-tint": "#0061a4",
+                    "surface-container": "#edeeef",
+                    "surface-variant": "#e1e3e4",
+                    "surface": "#f8f9fa",
+                    "on-primary-container": "#002c4f",
+                    "on-tertiary-container": "#422300",
+                    "on-tertiary-fixed-variant": "#693c00",
+                    "secondary-fixed-dim": "#78dc77",
+                    "tertiary-fixed-dim": "#ffb870",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-low": "#f3f4f5",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary-container": "#00731e",
+                    "tertiary-fixed": "#ffdcbe",
+                    "on-tertiary-fixed": "#2c1600",
+                    "inverse-on-surface": "#f0f1f2",
+                    "secondary": "#006e1c",
+                    "tertiary-container": "#d37d00",
+                    "primary-fixed-dim": "#9ecaff",
+                    "secondary-fixed": "#94f990",
+                    "on-surface": "#191c1d",
+                    "primary": "#0061a4",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#9ecaff",
+                    "background": "#f8f9fa",
+                    "on-background": "#191c1d",
+                    "primary-container": "#2196f3",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#91f78e",
+                    "on-surface-variant": "#404752",
+                    "inverse-surface": "#2e3132",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "margin-tablet": "24px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "gutter": "16px",
+                    "sm": "8px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "title-lg": ["Hanken Grotesk"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                    "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface-container-low dark:bg-surface-container-low">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed">Quản lý Tài chính</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 rounded-full hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-colors duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="mt-20 px-margin-mobile md:px-margin-tablet max-w-4xl mx-auto space-y-lg">
+<!-- Profile Hero Section (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Profile Info Card -->
+<div class="md:col-span-2 bg-surface p-lg rounded-xl flex items-center gap-lg border border-outline-variant/30">
+<div class="relative">
+<img alt="Profile" class="w-20 h-20 rounded-full object-cover border-2 border-primary" data-alt="A professional studio portrait of a confident young Vietnamese man with a friendly smile, dressed in a sleek charcoal grey modern business casual outfit. The lighting is soft and directional, creating gentle shadows that emphasize facial features. The background is a clean, minimalist off-white studio wall, perfectly complementing a modern corporate financial application's aesthetic. High-end editorial photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBL1NASBcTlbdyUL3te41I1UUiAqqx64mu9odaFrZCPT5YD7UcUU-WIjTvwFkstf2Vg0g_KNfefH692kEMELXcADPFThVJSx9rBucVt_NUrvlMhNWPeMHzB0MOBCMcR8LraMca1LdFS1ALyVkTemT5M4yBBSoBTWDl8POH1IrsVkYDwKy-4znGcZF2FJ0VBevAgM20uupRxtJGRt8Mk19c1uR3WrX3cmefnygJac95X-gqDHHhTX9f_rCXTvox-LwJmfRJ5Gi5TBY"/>
+<div class="absolute bottom-0 right-0 bg-primary-container text-on-primary-container p-1 rounded-full border-2 border-surface">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit">edit</span>
+</div>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Nguyễn Minh Quân</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">quan.nguyen@email.com</p>
+<div class="mt-sm flex gap-xs">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-label-sm font-label-sm">Hội viên Pro</span>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-label-sm font-label-sm">Cập nhật 2 ngày trước</span>
+</div>
+</div>
+</div>
+<!-- Theme & Quick Actions -->
+<div class="bg-surface-container-high p-lg rounded-xl flex flex-col justify-between border border-outline-variant/30">
+<div class="flex items-center justify-between">
+<span class="font-title-lg text-title-lg text-on-surface">Giao diện</span>
+<button class="w-12 h-6 bg-primary rounded-full relative transition-colors">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform translate-x-0"></div>
+</button>
+</div>
+<div class="flex items-center gap-sm mt-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="light_mode">light_mode</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Sáng (Đang dùng)</span>
+</div>
+</div>
+</div>
+<!-- Asset Management (Glassmorphism Concept) -->
+<section class="space-y-md">
+<h3 class="font-title-lg text-title-lg text-on-surface px-xs">Quản lý Tài sản &amp; Ngân sách</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Total Assets Field -->
+<div class="bg-primary/5 p-lg rounded-xl border border-primary/20 backdrop-blur-sm">
+<div class="flex items-center justify-between mb-sm">
+<label class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Tổng tài sản hiện tại</label>
+<span class="material-symbols-outlined text-primary" data-icon="account_balance">account_balance</span>
+</div>
+<div class="relative group">
+<input class="w-full bg-transparent border-none p-0 font-display-lg text-display-lg text-primary focus:ring-0 placeholder-primary/30" type="text" value="1,250,000,000"/>
+<span class="absolute right-0 bottom-2 font-headline-md text-headline-md text-primary/60">VND</span>
+<div class="h-0.5 w-0 group-focus-within:w-full bg-primary transition-all duration-300"></div>
+</div>
+<p class="mt-md font-body-md text-body-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="trending_up">trending_up</span>
+<span class="text-secondary font-bold">+5.2%</span> so với tháng trước
+                    </p>
+</div>
+<!-- Monthly Fixed Cost Field -->
+<div class="bg-surface p-lg rounded-xl border border-outline-variant/30">
+<div class="flex items-center justify-between mb-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Chi phí cố định hàng tháng</label>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="event_repeat">event_repeat</span>
+</div>
+<div class="relative group">
+<input class="w-full bg-transparent border-none p-0 font-headline-md text-headline-md text-on-surface focus:ring-0" type="text" value="15,000,000"/>
+<span class="absolute right-0 bottom-1 font-title-lg text-title-lg text-on-surface-variant">VND</span>
+<div class="h-0.5 w-full bg-outline-variant/30"></div>
+</div>
+<div class="mt-md p-md bg-surface-container-lowest rounded-lg border border-outline-variant/20">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-body-md text-body-md text-on-surface-variant">Ngân sách an toàn</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">KHUYÊN DÙNG</span>
+</div>
+<p class="font-title-lg text-title-lg text-on-surface">~ 8,500,000 đ <span class="text-body-md font-normal text-on-surface-variant">/ tháng</span></p>
+</div>
+</div>
+</div>
+</section>
+<!-- Settings List -->
+<section class="bg-surface rounded-xl border border-outline-variant/30 overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant/20">
+<h3 class="font-title-lg text-title-lg text-on-surface">Cài đặt hệ thống</h3>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<!-- Category Management -->
+<button class="w-full flex items-center justify-between px-lg py-md hover:bg-surface-variant/50 transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="category">category</span>
+</div>
+<div class="text-left">
+<p class="font-body-lg text-body-lg text-on-surface">Quản lý danh mục</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Chỉnh sửa biểu tượng và tên phân loại</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Export Data -->
+<button class="w-full flex items-center justify-between px-lg py-md hover:bg-surface-variant/50 transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="file_export">file_export</span>
+</div>
+<div class="text-left">
+<p class="font-body-lg text-body-lg text-on-surface">Xuất dữ liệu</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Tải báo cáo định dạng Excel, CSV hoặc PDF</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Security -->
+<button class="w-full flex items-center justify-between px-lg py-md hover:bg-surface-variant/50 transition-colors group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="security">security</span>
+</div>
+<div class="text-left">
+<p class="font-body-lg text-body-lg text-on-surface">Bảo mật &amp; Quyền riêng tư</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Mã PIN, vân tay và xác thực 2 lớp</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Logout Button -->
+<button class="w-full py-md flex items-center justify-center gap-sm text-error font-title-lg text-title-lg hover:bg-error-container/10 rounded-xl transition-colors">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+            Đăng xuất
+        </button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs pb-sm pt-xs bg-surface-container dark:bg-surface-container rounded-t-xl shadow-md">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant scale-95 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Tổng quan</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant scale-95 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm">Giao dịch</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant scale-95 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-label-sm text-label-sm">Tài sản</span>
+</button>
+<!-- Active Tab: Cá nhân (Profile) -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container dark:bg-on-secondary-fixed-variant dark:text-secondary-fixed rounded-full px-5 py-1 scale-95 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm">Cá nhân</span>
+</button>
+</nav>
+</body></html>

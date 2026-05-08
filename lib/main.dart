@@ -6,6 +6,7 @@ import 'providers/app_provider.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/asset_provider.dart';
 import 'providers/bill_provider.dart';
+import 'providers/budget_provider.dart';
 import 'screens/overview_screen.dart';
 import 'screens/transaction_history_screen.dart';
 import 'screens/profile_screen.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ChangeNotifierProvider(create: (_) => AssetProvider()),
         ChangeNotifierProvider(create: (_) => BillProvider()),
+        ChangeNotifierProvider(create: (_) => BudgetProvider()),
       ],
       child: MaterialApp(
         title: 'Quản lý Tài chính',
@@ -123,9 +125,15 @@ class _AppShellState extends State<AppShell> {
     final billProvider = context.read<BillProvider>();
     
     await appProvider.initialize();
+    txProvider.setUser(appProvider.user);
     await txProvider.loadTransactions();
     await assetProvider.loadAssets();
     await billProvider.loadBills();
+
+    // Sync budget provider with current transactions
+    final budgetProvider = context.read<BudgetProvider>();
+    await budgetProvider.loadBudgets();
+    budgetProvider.syncTransactions(txProvider.transactions);
 
     final isPinSet = appProvider.isPinSetup;
     final isLocked = await appProvider.securityService.isLocked();

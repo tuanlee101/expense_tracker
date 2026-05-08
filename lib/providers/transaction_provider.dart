@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction_model.dart';
+import '../models/user_model.dart';
 import '../services/data_service.dart';
 
 class TransactionProvider extends ChangeNotifier {
@@ -15,6 +16,7 @@ class TransactionProvider extends ChangeNotifier {
   DateTime? _filterDateStart;
   DateTime? _filterDateEnd;
   String? _filterWallet;
+  UserModel _user = UserModel();
 
   List<TransactionModel> get transactions => _transactions;
   bool get isLoading => _isLoading;
@@ -98,11 +100,26 @@ class TransactionProvider extends ChangeNotifier {
   }
 
   double get safeSpendingDaily {
-    // Fallback: 50% monthly income / 30 days when user budget is unavailable
+    // Priority 1: explicit user safe budget (monthly) -> daily
+    if (_user.safeBudget > 0) {
+      return _user.safeBudget / 30;
+    }
+
+    // Priority 2: remaining budget after fixed cost
+    final remaining = totalIncomeThisMonth - _user.monthlyFixedCost;
+    if (remaining > 0) {
+      return remaining / 30;
+    }
+
+    // Priority 3: conservative fallback from income
     final monthlyIncome = totalIncomeThisMonth;
-    if (monthlyIncome <= 0) return 450000;
-    final safeAmount = (monthlyIncome * 0.5) / 30;
-    return safeAmount > 0 ? safeAmount : 450000;
+    if (monthlyIncome > 0) {
+      final safeAmount = (monthlyIncome * 0.5) / 30;
+      if (safeAmount > 0) return safeAmount;
+    }
+
+    // Last resort fallback
+    return 450000;
   }
 
   Map<String, double> get categoryBreakdown {
@@ -196,6 +213,11 @@ class TransactionProvider extends ChangeNotifier {
     _filterDateStart = null;
     _filterDateEnd = null;
     _filterWallet = null;
+    notifyListeners();
+  }
+
+  void setUser(UserModel user) {
+    _user = user;
     notifyListeners();
   }
 

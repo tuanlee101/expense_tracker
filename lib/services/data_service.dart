@@ -10,6 +10,7 @@ import '../models/transaction_model.dart';
 import '../models/user_model.dart';
 import '../models/asset_model.dart';
 import '../models/bill_model.dart';
+import '../models/budget_model.dart';
 
 /// Encrypts/decrypts sensitive payload using AES-256-CBC.
 /// Key is derived via SHA-256 from app secret + per-install instance ID
@@ -78,6 +79,7 @@ class DataService {
   static const String _assetsKey = 'assets';
   static const String _billsKey = 'bills';
   static const String _billsPaidKey = 'bills_paid_month';
+  static const String _budgetsKey = 'budgets';
 
   SharedPreferences? _prefs;
 
@@ -271,6 +273,27 @@ class DataService {
 
   double getTotalAssets(List<AssetModel> assets) {
     return assets.fold(0.0, (sum, asset) => sum + asset.balance);
+  }
+
+  // --- Budgets ---
+
+  Future<List<BudgetModel>> getBudgets() async {
+    final data = await _getEncrypted(_budgetsKey);
+    if (data == null) return [];
+
+    try {
+      final List<dynamic> jsonList = jsonDecode(data);
+      return jsonList
+          .map((e) => BudgetModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> saveBudgets(List<BudgetModel> budgets) async {
+    final data = jsonEncode(budgets.map((b) => b.toJson()).toList());
+    await _setEncrypted(_budgetsKey, data);
   }
 
   // --- Bills ---

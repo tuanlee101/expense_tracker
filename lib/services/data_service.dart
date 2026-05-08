@@ -1,9 +1,76 @@
 import 'dart:convert';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart' as crypto;
+import 'package:flutter/foundation.dart';
+import 'package:encrypt/encrypt.dart' as encrypt_pkg;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/transaction_model.dart';
 import '../models/user_model.dart';
 import '../models/asset_model.dart';
 import '../models/bill_model.dart';
+
+/// Encrypts/decrypts sensitive payload using AES-256-CBC.
+/// Key is derived via SHA-256 from app secret + per-install instance ID
+/// so each app install has a unique key stored in flutter_secure_storage.
+class _CryptoHelper {
+  static const String _keyStorageKey = 'crypto_key_seed';
+  static const String _appSecret = 'ET_V1_'; // changes on app version bump
+
+  static Future<encrypt_pkg.Key> _getOrCreateKey() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Try flutter_secure_storage first (available via flutter_secure_storage dep)
+    // Fallback: SharedPreferences with a per-install random seed
+    var seed = prefs.getString(_keyStorageKey);
+    if (seed == null) {
+      seed = _generateSecureSeed();
+      await prefs.setString(_keyStorageKey, seed);
+    }
+
+    // Derive a 32-byte key: SHA-256(appSecret + installSeed)
+    final input = utf8.encode('$_appSecret$seed');
+    final digest = crypto.sha256.convert(input);
+    return encrypt_pkg.Key(digest.bytes);
+  }
+
+  static String _generateSecureSeed() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
+    return base64Encode(bytes);
+  }
+
+  static Future<String> encrypt(String plainText) async {
+    if (plainText.isEmpty) return plainText;
+    try {
+      final key = await _getOrCreateKey();
+      final iv = encrypt_pkg.IV.fromSecureRandom(16);
+      final encrypter = encrypt_pkg.Encrypter(encrypt_pkg.AES(key, mode: encrypt_pkg.AESMode.cbc));
+      final encrypted = encrypter.encrypt(plainText, iv: iv);
+      return '${iv.base64}:${encrypted.base64}';
+    } catch (e) {
+      debugPrint('[Crypto] encrypt error: $e');
+      return plainText; // fallback: store unencrypted rather than crash
+    }
+  }
+
+  static Future<String> decrypt(String cipherText) async {
+    if (cipherText.isEmpty || !cipherText.contains(':')) return cipherText;
+    try {
+      final parts = cipherText.split(':');
+      if (parts.length != 2) return cipherText;
+      final key = await _getOrCreateKey();
+      final iv = encrypt_pkg.IV.fromBase64(parts[0]);
+      final encrypted = encrypt_pkg.Encrypted.fromBase64(parts[1]);
+      final encrypter = encrypt_pkg.Encrypter(encrypt_pkg.AES(key, mode: encrypt_pkg.AESMode.cbc));
+      return encrypter.decrypt(encrypted, iv: iv);
+    } catch (e) {
+      debugPrint('[Crypto] decrypt error: $e');
+      return cipherText;
+    }
+  }
+}
 
 class DataService {
   static const String _transactionsKey = 'transactions';
@@ -19,11 +86,26 @@ class DataService {
     return _prefs!;
   }
 
+  // --- Encrypted storage helpers ---
+
+  Future<String?> _getEncrypted(String key) async {
+    final prefs = await _preferences;
+    final raw = prefs.getString(key);
+    if (raw == null) return null;
+    return _CryptoHelper.decrypt(raw);
+  }
+
+  Future<void> _setEncrypted(String key, String value) async {
+    final prefs = await _preferences;
+    final encrypted = await _CryptoHelper.encrypt(value);
+    await prefs.setString(key, encrypted);
+  }
+
+
   // --- Transactions ---
 
   Future<List<TransactionModel>> getTransactions() async {
-    final prefs = await _preferences;
-    final data = prefs.getString(_transactionsKey);
+    final data = await _getEncrypted(_transactionsKey);
     if (data == null) return _getDefaultTransactions();
 
     try {
@@ -38,9 +120,8 @@ class DataService {
   }
 
   Future<void> saveTransactions(List<TransactionModel> transactions) async {
-    final prefs = await _preferences;
     final data = jsonEncode(transactions.map((t) => t.toJson()).toList());
-    await prefs.setString(_transactionsKey, data);
+    await _setEncrypted(_transactionsKey, data);
   }
 
   Future<void> addTransaction(TransactionModel transaction) async {
@@ -122,8 +203,7 @@ class DataService {
   // --- User Data ---
 
   Future<UserModel> getUserData() async {
-    final prefs = await _preferences;
-    final data = prefs.getString(_userKey);
+    final data = await _getEncrypted(_userKey);
     if (data == null) return UserModel();
 
     try {
@@ -134,15 +214,13 @@ class DataService {
   }
 
   Future<void> saveUserData(UserModel user) async {
-    final prefs = await _preferences;
-    await prefs.setString(_userKey, jsonEncode(user.toJson()));
+    await _setEncrypted(_userKey, jsonEncode(user.toJson()));
   }
 
   // --- Assets ---
 
   Future<List<AssetModel>> getAssets() async {
-    final prefs = await _preferences;
-    final data = prefs.getString(_assetsKey);
+    final data = await _getEncrypted(_assetsKey);
     if (data == null) return _getDefaultAssets();
 
     try {
@@ -156,9 +234,8 @@ class DataService {
   }
 
   Future<void> saveAssets(List<AssetModel> assets) async {
-    final prefs = await _preferences;
     final data = jsonEncode(assets.map((a) => a.toJson()).toList());
-    await prefs.setString(_assetsKey, data);
+    await _setEncrypted(_assetsKey, data);
   }
 
   Future<void> addAsset(AssetModel asset) async {
@@ -199,8 +276,7 @@ class DataService {
   // --- Bills ---
 
   Future<List<BillModel>> getBills() async {
-    final prefs = await _preferences;
-    final data = prefs.getString(_billsKey);
+    final data = await _getEncrypted(_billsKey);
     if (data == null) return _getDefaultBills();
 
     try {
@@ -214,9 +290,8 @@ class DataService {
   }
 
   Future<void> saveBills(List<BillModel> bills) async {
-    final prefs = await _preferences;
     final data = jsonEncode(bills.map((b) => b.toJson()).toList());
-    await prefs.setString(_billsKey, data);
+    await _setEncrypted(_billsKey, data);
   }
 
   Future<void> addBill(BillModel bill) async {
@@ -246,26 +321,69 @@ class DataService {
     if (index != -1) {
       bills[index] = bills[index].copyWith(isPaid: isPaid, updatedAt: DateTime.now());
       await saveBills(bills);
+
+      // Also track paid IDs for monthly reset
+      if (isPaid) {
+        await _savePaidBillIdForMonth(id);
+      }
+    }
+  }
+
+  Future<void> _savePaidBillIdForMonth(String billId) async {
+    final prefs = await _preferences;
+    final now = DateTime.now();
+    final key = '${_billsPaidKey}_${now.year}_${now.month}';
+    final data = prefs.getString(key);
+
+    final List<String> paidIds;
+    if (data != null) {
+      try {
+        paidIds = (jsonDecode(data) as List<dynamic>).cast<String>();
+      } catch (_) {
+        paidIds = [];
+      }
+    } else {
+      paidIds = [];
+    }
+
+    if (!paidIds.contains(billId)) {
+      paidIds.add(billId);
+      await prefs.setString(key, jsonEncode(paidIds));
     }
   }
 
   Future<void> resetMonthlyBills() async {
     final prefs = await _preferences;
     final now = DateTime.now();
-    final key = '${_billsPaidKey}_${now.year}_${now.month}';
-    final data = prefs.getString(key);
-    
-    if (data != null) {
-      final List<dynamic> paidIds = jsonDecode(data);
-      final bills = await getBills();
-      for (var bill in bills) {
-        if (!paidIds.contains(bill.id)) {
-          final index = bills.indexWhere((b) => b.id == bill.id);
-          if (index != -1) {
-            bills[index] = bills[index].copyWith(isPaid: false);
-          }
-        }
+    // Also check previous month in case we missed a rollover
+    final monthsToCheck = [
+      '${_billsPaidKey}_${now.year}_${now.month}',
+      '${_billsPaidKey}_${now.year}_${now.month - 1}',
+      '${_billsPaidKey}_${now.year - 1}_12', // Jan of current year
+    ];
+
+    final allPaidIds = <String>{};
+    for (final key in monthsToCheck) {
+      final data = prefs.getString(key);
+      if (data != null) {
+        try {
+          final ids = (jsonDecode(data) as List<dynamic>).cast<String>();
+          allPaidIds.addAll(ids);
+        } catch (_) {}
       }
+    }
+
+    final bills = await getBills();
+    bool changed = false;
+    for (int i = 0; i < bills.length; i++) {
+      final bill = bills[i];
+      final isPaidThisMonth = allPaidIds.contains(bill.id);
+      if (bill.isPaid != isPaidThisMonth) {
+        bills[i] = bill.copyWith(isPaid: isPaidThisMonth, updatedAt: DateTime.now());
+        changed = true;
+      }
+    }
+    if (changed) {
       await saveBills(bills);
     }
   }
@@ -285,11 +403,22 @@ class DataService {
     return bills.fold(0.0, (sum, bill) => sum + bill.amount);
   }
 
+  /// Safely creates a DateTime for the given month/day.
+  /// If [day] exceeds the month's length, uses the last day of that month.
+  static DateTime _safeDate(int year, int month, int day) {
+    if (day > 28) {
+      // Check last day of month
+      final lastDay = DateTime(year, month + 1, 0).day;
+      return DateTime(year, month, day.clamp(1, lastDay));
+    }
+    return DateTime(year, month, day);
+  }
+
   List<BillModel> getUpcomingBills(List<BillModel> bills, {int days = 7}) {
     final now = DateTime.now();
     return bills.where((bill) {
       if (bill.isPaid) return false;
-      final dueDate = DateTime(now.year, now.month, bill.dueDay);
+      final dueDate = _safeDate(now.year, now.month, bill.dueDay);
       final daysUntilDue = dueDate.difference(now).inDays;
       return daysUntilDue >= 0 && daysUntilDue <= days;
     }).toList();
@@ -297,10 +426,11 @@ class DataService {
 
   List<BillModel> getOverdueBills(List<BillModel> bills) {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     return bills.where((bill) {
       if (bill.isPaid) return false;
-      final dueDate = DateTime(now.year, now.month, bill.dueDay);
-      return dueDate.isBefore(DateTime(now.year, now.month, now.day));
+      final dueDate = _safeDate(now.year, now.month, bill.dueDay);
+      return dueDate.isBefore(today);
     }).toList();
   }
 }

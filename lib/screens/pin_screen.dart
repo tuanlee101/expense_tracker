@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +25,7 @@ class _PinScreenState extends State<PinScreen> {
   int _failedAttempts = 0;
 
   int _lockoutSeconds = 0;
+  Timer? _lockoutTimer;
 
   @override
   void initState() {
@@ -32,17 +35,38 @@ class _PinScreenState extends State<PinScreen> {
     }
   }
 
-  void _checkLockout() async {
+  Future<void> _checkLockout() async {
     final appProvider = context.read<AppProvider>();
-    while (true) {
-      final seconds = await appProvider.securityService.getRemainingLockoutSeconds();
-      if (seconds <= 0) break;
-      if (!mounted) return;
-      setState(() => _lockoutSeconds = seconds);
-      await Future.delayed(const Duration(seconds: 1));
-    }
-    if (mounted) {
-      setState(() => _lockoutSeconds = 0);
+    final persistedFailedAttempts = await appProvider.securityService.getFailedAttempts();
+    final remainingSeconds = await appProvider.securityService.getRemainingLockoutSeconds();
+
+    if (!mounted) return;
+
+    setState(() {
+      _failedAttempts = persistedFailedAttempts;
+      _lockoutSeconds = remainingSeconds;
+    });
+
+    _lockoutTimer?.cancel();
+    if (_lockoutSeconds > 0) {
+      _lockoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        final seconds = await appProvider.securityService.getRemainingLockoutSeconds();
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+
+        if (seconds <= 0) {
+          timer.cancel();
+          setState(() {
+            _lockoutSeconds = 0;
+            _failedAttempts = 0;
+          });
+          return;
+        }
+
+        setState(() => _lockoutSeconds = seconds);
+      });
     }
   }
 
@@ -109,14 +133,19 @@ class _PinScreenState extends State<PinScreen> {
         Navigator.of(context).pop(true);
       }
     } else {
+      final failedAttempts = await appProvider.securityService.getFailedAttempts();
+      final remainingAttempts = (5 - failedAttempts).clamp(0, 5);
+
+      if (!mounted) return;
       setState(() {
         _showError = true;
         _pin = '';
-        _failedAttempts++;
-        _errorMessage = 'Mã PIN không đúng. Còn ${5 - _failedAttempts} lần thử.';
+        _failedAttempts = failedAttempts;
+        _errorMessage = 'Mã PIN không đúng. Còn $remainingAttempts lần thử.';
       });
-      if (_failedAttempts >= 5) {
-        _checkLockout();
+
+      if (failedAttempts >= 5) {
+        await _checkLockout();
       }
     }
   }
@@ -132,6 +161,7 @@ class _PinScreenState extends State<PinScreen> {
 
   @override
   void dispose() {
+    _lockoutTimer?.cancel();
     _pinController.dispose();
     _confirmController.dispose();
     super.dispose();

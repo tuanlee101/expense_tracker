@@ -8,9 +8,11 @@ import '../utils/helpers.dart';
 class BillsScreen extends StatelessWidget {
   const BillsScreen({super.key});
 
-  DateTime _getDueDateForCurrentMonth(int dueDay) {
+  DateTime _safeDateForCurrentMonth(int dueDay) {
     final now = DateTime.now();
-    return DateTime(now.year, now.month, dueDay);
+    final lastDay = DateTime(now.year, now.month + 1, 0).day;
+    final safeDay = dueDay.clamp(1, lastDay);
+    return DateTime(now.year, now.month, safeDay);
   }
 
   @override
@@ -111,7 +113,7 @@ class BillsScreen extends StatelessWidget {
   }
 
   Widget _buildBillItem(BuildContext context, BillProvider provider, BillModel bill) {
-    final dueDate = _getDueDateForCurrentMonth(bill.dueDay);
+    final dueDate = _safeDateForCurrentMonth(bill.dueDay);
     final isOverdue = !bill.isPaid && dueDate.isBefore(DateTime.now());
 
     return Container(

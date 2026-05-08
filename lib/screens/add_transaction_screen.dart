@@ -8,48 +8,72 @@ import '../utils/constants.dart';
 import '../utils/helpers.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  const AddTransactionScreen({super.key});
+  /// Pass an existing transaction to open in edit mode.
+  final TransactionModel? existingTransaction;
+
+  const AddTransactionScreen({super.key, this.existingTransaction});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
 }
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
-  TransactionType _type = TransactionType.expense;
-  TransactionCategory _category = TransactionCategory.food;
+  late TransactionType _type;
+  late TransactionCategory _category;
   final _amountController = TextEditingController(text: '0');
   final _noteController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
-  String _wallet = 'Ví Tiền mặt';
+  final _titleController = TextEditingController();
+  late DateTime _selectedDate;
+  late String _wallet;
   bool _isSubmitting = false;
 
   final _amountFocusNode = FocusNode();
 
+  bool get _isEditing => widget.existingTransaction != null;
+
   @override
   void initState() {
     super.initState();
-    _amountController.selection = TextSelection(
-      baseOffset: 0,
-      extentOffset: _amountController.text.length,
-    );
+
+    if (_isEditing) {
+      final t = widget.existingTransaction!;
+      _type = t.type;
+      _category = t.category;
+      _amountController.text = t.amount.toInt().toString();
+      _noteController.text = t.note ?? '';
+      _titleController.text = t.title;
+      _selectedDate = t.date;
+      _wallet = t.wallet;
+    } else {
+      _type = TransactionType.expense;
+      _category = TransactionCategory.food;
+      _selectedDate = DateTime.now();
+      _wallet = 'Ví Tiền mặt';
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _amountController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _amountController.text.length,
+      );
+    });
   }
 
   @override
   void dispose() {
     _amountController.dispose();
     _noteController.dispose();
+    _titleController.dispose();
     _amountFocusNode.dispose();
     super.dispose();
   }
 
   void _onAmountChanged(String value) {
-    // Only allow digits
     final filtered = value.replaceAll(RegExp(r'[^0-9]'), '');
     if (filtered.isEmpty) {
       _amountController.text = '0';
     } else {
-      final number = int.parse(filtered);
-      _amountController.text = number.toString();
+      _amountController.text = filtered;
     }
     _amountController.selection = TextSelection(
       baseOffset: _amountController.text.length,
@@ -79,23 +103,41 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     setState(() => _isSubmitting = true);
 
-    final transaction = TransactionModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: _category.label,
-      note: _noteController.text.isNotEmpty ? _noteController.text : null,
-      amount: amount.toDouble(),
-      type: _type,
-      category: _category,
-      date: _selectedDate,
-      wallet: _wallet,
-    );
+    final provider = context.read<TransactionProvider>();
 
-    await context.read<TransactionProvider>().addTransaction(transaction);
+    if (_isEditing) {
+      final updated = widget.existingTransaction!.copyWith(
+        title: _titleController.text.isNotEmpty
+            ? _titleController.text
+            : _category.label,
+        note: _noteController.text.isNotEmpty ? _noteController.text : null,
+        amount: amount.toDouble(),
+        type: _type,
+        category: _category,
+        date: _selectedDate,
+        wallet: _wallet,
+      );
+      await provider.updateTransaction(updated);
+    } else {
+      final transaction = TransactionModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _category.label,
+        note: _noteController.text.isNotEmpty ? _noteController.text : null,
+        amount: amount.toDouble(),
+        type: _type,
+        category: _category,
+        date: _selectedDate,
+        wallet: _wallet,
+      );
+      await provider.addTransaction(transaction);
+    }
 
     if (mounted) {
       setState(() => _isSubmitting = false);
       Navigator.of(context).pop();
-      _showSnackBar('Thêm giao dịch thành công!');
+      _showSnackBar(
+        _isEditing ? 'Cập nhật giao dịch thành công!' : 'Thêm giao dịch thành công!',
+      );
     }
   }
 
@@ -104,7 +146,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
       ),
     );
   }
@@ -120,9 +164,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           icon: const Icon(Icons.close, color: AppColors.onSurface),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Thêm giao dịch',
-          style: TextStyle(
+        title: Text(
+          _isEditing ? 'Sửa giao dịch' : 'Thêm giao dịch',
+          style: const TextStyle(
             fontFamily: AppTypography.headlineFont,
             fontSize: 22,
             fontWeight: FontWeight.w500,
@@ -130,6 +174,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           ),
         ),
         centerTitle: false,
+        actions: _isEditing
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                  onPressed: () => _confirmDelete(),
+                  tooltip: 'Xóa giao dịch',
+                ),
+              ]
+            : null,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.marginMobile),
@@ -156,7 +209,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(AppRadius.full),
                           boxShadow: _type == TransactionType.expense
-                              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)]
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 4,
+                                  )
+                                ]
                               : null,
                         ),
                         child: Text(
@@ -183,7 +241,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(AppRadius.full),
                           boxShadow: _type == TransactionType.income
-                              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)]
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 4,
+                                  )
+                                ]
                               : null,
                         ),
                         child: Text(
@@ -203,14 +266,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
+
             // Amount Input
             Column(
               children: [
                 Text(
                   'Số tiền giao dịch',
-                  style: AppTypography.labelSm.copyWith(
-                    color: AppColors.outline,
-                  ),
+                  style: AppTypography.labelSm.copyWith(color: AppColors.outline),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Row(
@@ -255,30 +317,55 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
+
+            // Title Field (edit mode only)
+            if (_isEditing) ...[
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tiêu đề',
+                      style: AppTypography.labelSm.copyWith(color: AppColors.outline),
+                    ),
+                    TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        hintText: _category.label,
+                        hintStyle: TextStyle(color: AppColors.outlineVariant),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      style: AppTypography.bodyLg.copyWith(
+                        color: AppColors.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+
             // Category Grid
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Hạng mục',
-                  style: AppTypography.titleLg.copyWith(
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Xem tất cả',
-                    style: AppTypography.labelSm.copyWith(
-                      color: AppColors.primary,
-                    ),
-                  ),
+                  style: AppTypography.titleLg.copyWith(color: AppColors.onSurface),
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
             _buildCategoryGrid(),
             const SizedBox(height: AppSpacing.lg),
+
             // Date Picker
             _buildInfoField(
               icon: Icons.calendar_today,
@@ -287,13 +374,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               onTap: _selectDate,
             ),
             const SizedBox(height: AppSpacing.md),
+
             // Note Field
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: AppColors.surfaceContainer,
                 borderRadius: BorderRadius.circular(AppRadius.xl),
-                border: Border.all(color: Colors.transparent),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,16 +393,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       children: [
                         Text(
                           'Ghi chú',
-                          style: AppTypography.labelSm.copyWith(
-                            color: AppColors.outline,
-                          ),
+                          style: AppTypography.labelSm.copyWith(color: AppColors.outline),
                         ),
                         TextField(
                           controller: _noteController,
                           maxLines: 2,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Nhập ghi chú cho giao dịch này...',
-                            hintStyle: TextStyle(color: AppColors.outlineVariant),
+                            hintStyle: const TextStyle(color: AppColors.outlineVariant),
                             border: InputBorder.none,
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
@@ -331,6 +416,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
+
             // Wallet Selector
             _buildInfoField(
               icon: Icons.account_balance_wallet,
@@ -340,7 +426,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(AppRadius.xxl),
+                    ),
                   ),
                   builder: (context) => _buildWalletPicker(),
                 );
@@ -348,6 +436,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               showArrow: true,
             ),
             const SizedBox(height: AppSpacing.xl),
+
             // Submit Button
             SizedBox(
               height: 56,
@@ -359,7 +448,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.full),
                   ),
-                  elevation: 4,
                 ),
                 child: _isSubmitting
                     ? const SizedBox(
@@ -370,21 +458,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.check_circle, fill: 1),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            'Lưu giao dịch',
-                            style: AppTypography.bodyLg.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                    : Text(
+                        _isEditing ? 'Cập nhật' : 'Thêm giao dịch',
+                        style: AppTypography.bodyLg.copyWith(
+                          color: AppColors.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
             ),
+            const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
@@ -393,19 +476,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   Widget _buildCategoryGrid() {
     final categories = TransactionCategory.values;
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
-        mainAxisSpacing: AppSpacing.gutter,
-        crossAxisSpacing: AppSpacing.gutter,
+        mainAxisSpacing: AppSpacing.sm,
+        crossAxisSpacing: AppSpacing.sm,
         childAspectRatio: 0.85,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
         final isSelected = _category == cat;
+
         return GestureDetector(
           onTap: () => setState(() => _category = cat),
           child: Column(
@@ -422,7 +507,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 ),
                 child: Icon(
                   _getCategoryIcon(cat.icon),
-                  color: isSelected ? AppColors.onPrimaryContainer : AppColors.primary,
+                  color: isSelected
+                      ? AppColors.onPrimaryContainer
+                      : AppColors.primary,
                   size: 28,
                 ),
               ),
@@ -430,7 +517,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               Text(
                 cat.label,
                 style: AppTypography.labelSm.copyWith(
-                  color: isSelected ? AppColors.primary : AppColors.onSurfaceVariant,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.onSurfaceVariant,
                   fontWeight: isSelected ? FontWeight.bold : null,
                 ),
                 textAlign: TextAlign.center,
@@ -486,7 +575,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Widget _buildWalletPicker() {
-    final wallets = ['Ví Tiền mặt', 'Ví Ngân hàng', 'Ví Tiết kiệm', 'Ví Đầu tư'];
+    final wallets = [
+      'Ví Tiền mặt',
+      'Ví Ngân hàng',
+      'Ví Tiết kiệm',
+      'Ví Đầu tư',
+    ];
+
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
@@ -499,10 +594,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           ...wallets.map((w) => ListTile(
-                leading: const Icon(Icons.account_balance_wallet, color: AppColors.primary),
-                title: Text(w, style: AppTypography.bodyLg.copyWith(color: AppColors.onSurface)),
+                leading: const Icon(
+                  Icons.account_balance_wallet,
+                  color: AppColors.primary,
+                ),
+                title: Text(
+                  w,
+                  style: AppTypography.bodyLg.copyWith(color: AppColors.onSurface),
+                ),
                 trailing: _wallet == w
-                    ? const Icon(Icons.check_circle, color: AppColors.primary, fill: 1)
+                    ? const Icon(
+                        Icons.check_circle,
+                        color: AppColors.primary,
+                        fill: 1,
+                      )
                     : null,
                 onTap: () {
                   setState(() => _wallet = w);
@@ -514,18 +619,61 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
+  Future<void> _confirmDelete() async {
+    final t = widget.existingTransaction!;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        title: const Text('Xóa giao dịch'),
+        content: Text('Bạn có chắc muốn xóa "${t.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Xóa'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true && mounted) {
+      await context.read<TransactionProvider>().deleteTransaction(t.id);
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showSnackBar('Đã xóa giao dịch');
+      }
+    }
+  }
+
   IconData _getCategoryIcon(String iconName) {
     switch (iconName) {
-      case 'restaurant': return Icons.restaurant;
-      case 'shopping_cart': return Icons.shopping_cart;
-      case 'directions_car': return Icons.directions_car;
-      case 'home': return Icons.home;
-      case 'receipt': return Icons.receipt;
-      case 'favorite': return Icons.favorite;
-      case 'school': return Icons.school;
-      case 'payments': return Icons.payments;
-      case 'movie': return Icons.movie;
-      default: return Icons.more_horiz;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'shopping_cart':
+        return Icons.shopping_cart;
+      case 'directions_car':
+        return Icons.directions_car;
+      case 'home':
+        return Icons.home;
+      case 'receipt':
+        return Icons.receipt;
+      case 'favorite':
+        return Icons.favorite;
+      case 'school':
+        return Icons.school;
+      case 'payments':
+        return Icons.payments;
+      case 'movie':
+        return Icons.movie;
+      default:
+        return Icons.more_horiz;
     }
   }
 }

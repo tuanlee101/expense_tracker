@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import '../models/transaction_model.dart';
 import '../services/data_service.dart';
 
@@ -9,29 +12,57 @@ class TransactionProvider extends ChangeNotifier {
   String _searchQuery = '';
   TransactionCategory? _filterCategory;
   TransactionType? _filterType;
+  DateTime? _filterDateStart;
+  DateTime? _filterDateEnd;
+  String? _filterWallet;
 
   List<TransactionModel> get transactions => _transactions;
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
   TransactionCategory? get filterCategory => _filterCategory;
   TransactionType? get filterType => _filterType;
+  DateTime? get filterDateStart => _filterDateStart;
+  DateTime? get filterDateEnd => _filterDateEnd;
+  String? get filterWallet => _filterWallet;
+
+  /// All unique wallet names from transactions.
+  List<String> get wallets =>
+      _transactions.map((t) => t.wallet).toSet().toList()..sort();
 
   List<TransactionModel> get filteredTransactions {
     var result = _transactions;
+
     if (_searchQuery.isNotEmpty) {
-      result = result
-          .where((t) =>
-              t.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              (t.note?.toLowerCase().contains(_searchQuery.toLowerCase()) ??
-                  false))
-          .toList();
+      final query = _searchQuery.toLowerCase();
+      result = result.where((t) {
+        return t.title.toLowerCase().contains(query) ||
+            t.category.label.toLowerCase().contains(query) ||
+            (t.note?.toLowerCase().contains(query) ?? false);
+      }).toList();
     }
+
     if (_filterCategory != null) {
       result = result.where((t) => t.category == _filterCategory).toList();
     }
+
     if (_filterType != null) {
       result = result.where((t) => t.type == _filterType).toList();
     }
+
+    if (_filterDateStart != null) {
+      result = result
+          .where((t) => t.date.isAfter(_filterDateStart!.subtract(const Duration(days: 1))))
+          .toList();
+    }
+
+    if (_filterDateEnd != null) {
+      result = result.where((t) => t.date.isBefore(_filterDateEnd!.add(const Duration(days: 1)))).toList();
+    }
+
+    if (_filterWallet != null) {
+      result = result.where((t) => t.wallet == _filterWallet).toList();
+    }
+
     return result;
   }
 
@@ -147,10 +178,51 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setFilterDateRange(DateTime? start, DateTime? end) {
+    _filterDateStart = start;
+    _filterDateEnd = end;
+    notifyListeners();
+  }
+
+  void setFilterWallet(String? wallet) {
+    _filterWallet = wallet;
+    notifyListeners();
+  }
+
   void clearFilters() {
     _searchQuery = '';
     _filterCategory = null;
     _filterType = null;
+    _filterDateStart = null;
+    _filterDateEnd = null;
+    _filterWallet = null;
     notifyListeners();
+  }
+
+  /// Generate CSV content for export.
+  String getCsvContent({List<TransactionModel>? transactions}) {
+    final items = transactions ?? filteredTransactions;
+    final buf = StringBuffer();
+    // Excel-friendly UTF-8 BOM
+    buf.write('\uFEFF');
+    buf.writeln('Ngày,Loại,Hạng mục,Danh mục,Số tiền,Ví,Ghi chú');
+
+    for (final t in items) {
+      final date = DateFormat('dd/MM/yyyy').format(t.date);
+      final type = t.type == TransactionType.expense ? 'Chi tiêu' : 'Thu nhập';
+      final amount = t.type == TransactionType.expense
+          ? '-${_formatCsvNum(t.amount)}'
+          : _formatCsvNum(t.amount);
+      final note = (t.note ?? '').replaceAll('"', '""');
+      final wallet = t.wallet;
+      buf.writeln('$date,$type,${t.category.label},${t.title},"$amount",$wallet,"$note"');
+    }
+
+    return buf.toString();
+  }
+
+  static String _formatCsvNum(double n) {
+    // Format without grouping separators, with dot as decimal
+    return n.toStringAsFixed(0);
   }
 }
